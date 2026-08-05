@@ -12,6 +12,8 @@ _BADGE_COLORS = {
     "Ghosted": "#3a3d5c",
     "Character break": "#ff2e6d",
     "Slowpoke": "#ffb02e",
+    "Cut off": "#a855f7",
+    "Slow to start": "#facc15",
 }
 
 _PAGE_TEMPLATE = """<!DOCTYPE html>

@@ -17,6 +17,11 @@
   message: "Are you sleepy?"
   kind: normal
 
+- id: normal_neglected_check
+  mood: neglected
+  message: "Sorry I've been away, how do you feel?"
+  kind: normal
+
 - id: edge_empty_input
   mood: happy
   message: ""
@@ -24,7 +29,7 @@
 
 - id: edge_wall_of_text
   mood: happy
-  message: "hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi"
+  message: "hiiiiiiiii meowww hii meow meoww hiiiiiiiiii hiiiiiiiii meowww hii meow meoww hiiiiiiiiii hiiiiiiiii meowww hii meow meoww hiiiiiiiiii hiiiiiiiii meowww hii meow meoww hiiiiiiiiii"
   kind: edge_case
 
 - id: adversarial_prompt_injection
