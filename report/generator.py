@@ -377,8 +377,8 @@ _STRESS_TEMPLATE = """<!DOCTYPE html>
     font-weight: 800;
     letter-spacing: 0.06em;
     margin-bottom: 4px;
-    color: #ff2e6d;
-    text-shadow: 0 0 8px rgba(255,46,109,0.7), 0 0 20px rgba(255,46,109,0.35);
+    color: #00fff0;
+    text-shadow: 0 0 8px rgba(0,255,240,0.7), 0 0 20px rgba(0,255,240,0.35);
     position: relative;
     display: inline-block;
     animation: glitch-flicker 5s infinite steps(1);
@@ -395,14 +395,14 @@ _STRESS_TEMPLATE = """<!DOCTYPE html>
   }}
   h1::before {{
     left: 3px;
-    color: #00fff0;
-    text-shadow: -2px 0 #00fff0, 2px 0 #ff2e6d;
+    color: #ff2e6d;
+    text-shadow: -2px 0 #ff2e6d, 2px 0 #00fff0;
     animation: glitch-top 5s infinite steps(1);
   }}
   h1::after {{
     left: -3px;
-    color: #ff2e6d;
-    text-shadow: 2px 0 #ff2e6d, -2px 0 #00fff0;
+    color: #00fff0;
+    text-shadow: 2px 0 #00fff0, -2px 0 #ff2e6d;
     animation: glitch-bottom 5s infinite steps(1);
   }}
   @keyframes glitch-flicker {{
@@ -556,11 +556,35 @@ _STRESS_TEMPLATE = """<!DOCTYPE html>
     background: rgba(255,46,109,0.08);
     color: #ff6d94;
   }}
+  .ticker {{
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 1px solid rgba(0,255,240,0.35);
+    border-bottom: 1px solid rgba(0,255,240,0.35);
+    box-shadow: 0 0 10px rgba(0,255,240,0.15);
+    background: rgba(0,255,240,0.03);
+    padding: 6px 0;
+    margin-bottom: 26px;
+  }}
+  .ticker span {{
+    display: inline-block;
+    padding-left: 100%;
+    font-size: 12px;
+    color: #7de8ff;
+    letter-spacing: 0.04em;
+    animation: ticker-scroll 22s linear infinite;
+  }}
+  @keyframes ticker-scroll {{
+    0%   {{ transform: translateX(0); }}
+    100% {{ transform: translateX(-100%); }}
+  }}
 </style>
 </head>
 <body>
   <h1 data-text="&gt;&gt; BUGGY_HUNTER // stress round">&gt;&gt; BUGGY_HUNTER // stress round</h1>
   <div class="subtitle">run at {timestamp} :: {mode_note}</div>
+  <div class="ticker"><span>{ticker_text}</span></div>
 
   <div class="hp-wrap">
     <div class="hp-label"><span>Pet HP (success rate)</span><span>{success_pct}%</span></div>
@@ -620,9 +644,17 @@ def generate_stress_report(stats: dict, dry_run: bool, output_path: str) -> str:
     else:
         verdict_class, verdict_text = "lose", ">> PET WAS DEFEATED. High failure rate under load - this needs fixing."
 
+    ticker_parts = []
+    for r in stats["per_request"]:
+        tag = "OK" if r["ok"] else "ALERT"
+        ticker_parts.append(f"{tag}::request_{r['index']}::{r['latency_seconds']:.2f}s")
+    ticker_line = "   //   ".join(ticker_parts) or "NO REQUESTS"
+    ticker_text = f"{ticker_line}   //   {ticker_line}"
+
     html = _STRESS_TEMPLATE.format(
         timestamp=datetime.now().strftime("%Y-%m-%d %H:%M"),
         mode_note=mode_note,
+        ticker_text=ticker_text,
         success_pct=success_pct,
         total_requests=stats["total_requests"],
         concurrency=stats["concurrency"],
@@ -671,8 +703,98 @@ _COMPARE_TEMPLATE = """<!DOCTYPE html>
     margin-bottom: 4px;
     color: #00fff0;
     text-shadow: 0 0 8px rgba(0,255,240,0.7), 0 0 20px rgba(0,255,240,0.35);
+    position: relative;
+    display: inline-block;
+    animation: glitch-flicker 5s infinite steps(1);
   }}
-  .subtitle {{
+  h1::before, h1::after {{
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    background: #05050f;
+    clip-path: inset(0 0 100% 0);
+  }}
+  h1::before {{
+    left: 3px;
+    color: #ff2e6d;
+    text-shadow: -2px 0 #ff2e6d, 2px 0 #00fff0;
+    animation: glitch-top 5s infinite steps(1);
+  }}
+  h1::after {{
+    left: -3px;
+    color: #00fff0;
+    text-shadow: 2px 0 #00fff0, -2px 0 #ff2e6d;
+    animation: glitch-bottom 5s infinite steps(1);
+  }}
+  @keyframes glitch-flicker {{
+    0%     {{ opacity: 1; }}
+    40%    {{ opacity: 1; }}
+    40.5%  {{ opacity: 0.3; }}
+    41%    {{ opacity: 1; }}
+    41.5%  {{ opacity: 0.2; }}
+    42%    {{ opacity: 1; }}
+    42.5%  {{ opacity: 0.4; }}
+    43%    {{ opacity: 1; }}
+    85%    {{ opacity: 1; }}
+    85.5%  {{ opacity: 0.3; }}
+    86%    {{ opacity: 1; }}
+    86.5%  {{ opacity: 0.2; }}
+    87%    {{ opacity: 1; }}
+    100%   {{ opacity: 1; }}
+  }}
+  @keyframes glitch-top {{
+    0%     {{ clip-path: inset(0 0 100% 0); }}
+    40%    {{ clip-path: inset(0 0 100% 0); }}
+    40.5%  {{ clip-path: inset(10% 0 70% 0); transform: translate(-6px, -2px) skewX(4deg); }}
+    41%    {{ clip-path: inset(45% 0 30% 0); transform: translate(5px, 1px) skewX(-3deg); }}
+    41.5%  {{ clip-path: inset(20% 0 60% 0); transform: translate(-5px, 2px) skewX(3deg); }}
+    42%    {{ clip-path: inset(60% 0 10% 0); transform: translate(4px, -1px) skewX(-4deg); }}
+    42.5%  {{ clip-path: inset(0 0 100% 0); transform: translate(0,0) skewX(0deg); }}
+    85%    {{ clip-path: inset(0 0 100% 0); }}
+    85.5%  {{ clip-path: inset(30% 0 45% 0); transform: translate(6px, 1px) skewX(-3deg); }}
+    86%    {{ clip-path: inset(55% 0 15% 0); transform: translate(-4px, -1px) skewX(2deg); }}
+    86.5%  {{ clip-path: inset(0 0 100% 0); transform: translate(0,0) skewX(0deg); }}
+    100%   {{ clip-path: inset(0 0 100% 0); }}
+  }}
+  @keyframes glitch-bottom {{
+    0%     {{ clip-path: inset(0 0 100% 0); }}
+    40%    {{ clip-path: inset(0 0 100% 0); }}
+    40.7%  {{ clip-path: inset(55% 0 15% 0); transform: translate(6px, 1px) skewX(-4deg); }}
+    41.2%  {{ clip-path: inset(15% 0 65% 0); transform: translate(-5px, -1px) skewX(3deg); }}
+    41.7%  {{ clip-path: inset(65% 0 8% 0); transform: translate(5px, 2px) skewX(-2deg); }}
+    42.2%  {{ clip-path: inset(0 0 100% 0); transform: translate(0,0) skewX(0deg); }}
+    85%    {{ clip-path: inset(0 0 100% 0); }}
+    85.7%  {{ clip-path: inset(35% 0 40% 0); transform: translate(-6px, 1px) skewX(3deg); }}
+    86.2%  {{ clip-path: inset(60% 0 10% 0); transform: translate(5px, -2px) skewX(-3deg); }}
+    86.7%  {{ clip-path: inset(0 0 100% 0); transform: translate(0,0) skewX(0deg); }}
+    100%   {{ clip-path: inset(0 0 100% 0); }}
+  }}
+  .ticker {{
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 1px solid rgba(0,255,240,0.35);
+    border-bottom: 1px solid rgba(0,255,240,0.35);
+    box-shadow: 0 0 10px rgba(0,255,240,0.15);
+    background: rgba(0,255,240,0.03);
+    padding: 6px 0;
+    margin-bottom: 26px;
+  }}
+  .ticker span {{
+    display: inline-block;
+    padding-left: 100%;
+    font-size: 12px;
+    color: #7de8ff;
+    letter-spacing: 0.04em;
+    animation: ticker-scroll 22s linear infinite;
+  }}
+  @keyframes ticker-scroll {{
+    0%   {{ transform: translateX(0); }}
+    100% {{ transform: translateX(-100%); }}
+  }}
     color: #ff2ea0;
     font-size: 12px;
     margin-bottom: 28px;
@@ -783,8 +905,9 @@ _COMPARE_TEMPLATE = """<!DOCTYPE html>
 </style>
 </head>
 <body>
-  <h1>&gt;&gt; BUGGY_HUNTER // compare log</h1>
+  <h1 data-text="&gt;&gt; BUGGY_HUNTER // compare log">&gt;&gt; BUGGY_HUNTER // compare log</h1>
   <div class="subtitle">run at {timestamp}</div>
+  <div class="ticker"><span>{ticker_text}</span></div>
   {not_configured_note}
 
   <div class="columns">
@@ -866,8 +989,18 @@ def generate_compare_report(comparison: dict, output_path: str) -> str:
     else:
         verdict_text = f">> Gemini held character better this run ({g_pass_pct}% vs {a_pass_pct}%)."
 
+    ticker_parts = []
+    for provider_label, key in (("ANTHROPIC", "anthropic"), ("GEMINI", "gemini")):
+        for r in comparison[key]["results"]:
+            tag = "OK" if r["passed"] else "ALERT"
+            badge_str = "".join(f"[{b['badge'].upper()}]" for b in r["badges"])
+            ticker_parts.append(f"{provider_label}::{tag}::{r['id']}{badge_str}")
+    ticker_line = "   //   ".join(ticker_parts) or "NO RESULTS"
+    ticker_text = f"{ticker_line}   //   {ticker_line}"
+
     html = _COMPARE_TEMPLATE.format(
         timestamp=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        ticker_text=ticker_text,
         not_configured_note=not_configured_note,
         anthropic_pass_pct=a_pass_pct,
         gemini_pass_pct=g_pass_pct,
