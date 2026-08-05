@@ -132,7 +132,7 @@ _PAGE_TEMPLATE = """<!DOCTYPE html>
     font-size: 12px;
     color: #7de8ff;
     letter-spacing: 0.04em;
-    animation: ticker-scroll 22s linear infinite;
+    animation: ticker-scroll 150s linear infinite;
   }}
   @keyframes ticker-scroll {{
     0%   {{ transform: translateX(0); }}
@@ -449,7 +449,7 @@ _STRESS_TEMPLATE = """<!DOCTYPE html>
     100%   {{ clip-path: inset(0 0 100% 0); }}
   }}
   .subtitle {{
-    color: #7de8ff;
+    color: #ff2ea0;
     font-size: 12px;
     margin-bottom: 28px;
     text-transform: uppercase;
@@ -573,7 +573,7 @@ _STRESS_TEMPLATE = """<!DOCTYPE html>
     font-size: 12px;
     color: #7de8ff;
     letter-spacing: 0.04em;
-    animation: ticker-scroll 22s linear infinite;
+    animation: ticker-scroll 150s linear infinite;
   }}
   @keyframes ticker-scroll {{
     0%   {{ transform: translateX(0); }}
@@ -789,7 +789,7 @@ _COMPARE_TEMPLATE = """<!DOCTYPE html>
     font-size: 12px;
     color: #7de8ff;
     letter-spacing: 0.04em;
-    animation: ticker-scroll 22s linear infinite;
+    animation: ticker-scroll 150s linear infinite;
   }}
   @keyframes ticker-scroll {{
     0%   {{ transform: translateX(0); }}

@@ -80,6 +80,14 @@ Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_l
 
 ![Stress log sample](screenshots/stress_log_sample.png)
 
+**Stream check**: first-token latency and chunk integrity for streaming responses:
+
+![Stream log sample](screenshots/stream_log_sample.png)
+
+**Model comparison**: Anthropic vs Gemini side by side on the same adversarial prompts:
+
+![Compare log sample](screenshots/compare_log_sample.png)
+
 ## Roadmap
 
 - [x] Baseline test runner + validators

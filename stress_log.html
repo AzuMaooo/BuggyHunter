@@ -23,8 +23,8 @@
     font-weight: 800;
     letter-spacing: 0.06em;
     margin-bottom: 4px;
-    color: #ff2e6d;
-    text-shadow: 0 0 8px rgba(255,46,109,0.7), 0 0 20px rgba(255,46,109,0.35);
+    color: #00fff0;
+    text-shadow: 0 0 8px rgba(0,255,240,0.7), 0 0 20px rgba(0,255,240,0.35);
     position: relative;
     display: inline-block;
     animation: glitch-flicker 5s infinite steps(1);
@@ -41,14 +41,14 @@
   }
   h1::before {
     left: 3px;
-    color: #00fff0;
-    text-shadow: -2px 0 #00fff0, 2px 0 #ff2e6d;
+    color: #ff2e6d;
+    text-shadow: -2px 0 #ff2e6d, 2px 0 #00fff0;
     animation: glitch-top 5s infinite steps(1);
   }
   h1::after {
     left: -3px;
-    color: #ff2e6d;
-    text-shadow: 2px 0 #ff2e6d, -2px 0 #00fff0;
+    color: #00fff0;
+    text-shadow: 2px 0 #00fff0, -2px 0 #ff2e6d;
     animation: glitch-bottom 5s infinite steps(1);
   }
   @keyframes glitch-flicker {
@@ -95,7 +95,7 @@
     100%   { clip-path: inset(0 0 100% 0); }
   }
   .subtitle {
-    color: #7de8ff;
+    color: #ff2ea0;
     font-size: 12px;
     margin-bottom: 28px;
     text-transform: uppercase;
@@ -202,11 +202,35 @@
     background: rgba(255,46,109,0.08);
     color: #ff6d94;
   }
+  .ticker {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 1px solid rgba(0,255,240,0.35);
+    border-bottom: 1px solid rgba(0,255,240,0.35);
+    box-shadow: 0 0 10px rgba(0,255,240,0.15);
+    background: rgba(0,255,240,0.03);
+    padding: 6px 0;
+    margin-bottom: 26px;
+  }
+  .ticker span {
+    display: inline-block;
+    padding-left: 100%;
+    font-size: 12px;
+    color: #7de8ff;
+    letter-spacing: 0.04em;
+    animation: ticker-scroll 150s linear infinite;
+  }
+  @keyframes ticker-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
 </style>
 </head>
 <body>
   <h1 data-text="&gt;&gt; BUGGY_HUNTER // stress round">&gt;&gt; BUGGY_HUNTER // stress round</h1>
-  <div class="subtitle">run at 2026-08-06 01:19 :: dry-run mode (canned replies, no API key set)</div>
+  <div class="subtitle">run at 2026-08-06 02:09 :: dry-run mode (canned replies, no API key set)</div>
+  <div class="ticker"><span>OK::request_0::0.53s   //   OK::request_1::0.45s   //   OK::request_2::0.59s   //   OK::request_3::0.43s   //   OK::request_4::0.29s   //   OK::request_5::0.24s   //   OK::request_6::0.27s   //   OK::request_7::0.26s   //   OK::request_8::0.59s   //   OK::request_9::0.32s   //   OK::request_10::0.45s   //   OK::request_11::0.48s   //   OK::request_12::0.52s   //   OK::request_13::0.33s   //   OK::request_14::0.40s   //   OK::request_15::0.43s   //   OK::request_16::0.32s   //   OK::request_17::0.28s   //   OK::request_18::0.38s   //   OK::request_19::0.30s   //   OK::request_0::0.53s   //   OK::request_1::0.45s   //   OK::request_2::0.59s   //   OK::request_3::0.43s   //   OK::request_4::0.29s   //   OK::request_5::0.24s   //   OK::request_6::0.27s   //   OK::request_7::0.26s   //   OK::request_8::0.59s   //   OK::request_9::0.32s   //   OK::request_10::0.45s   //   OK::request_11::0.48s   //   OK::request_12::0.52s   //   OK::request_13::0.33s   //   OK::request_14::0.40s   //   OK::request_15::0.43s   //   OK::request_16::0.32s   //   OK::request_17::0.28s   //   OK::request_18::0.38s   //   OK::request_19::0.30s</span></div>
 
   <div class="hp-wrap">
     <div class="hp-label"><span>Pet HP (success rate)</span><span>100.0%</span></div>
@@ -217,24 +241,24 @@
     <div class="stat"><div class="label">Requests</div><div class="value">20</div></div>
     <div class="stat"><div class="label">Concurrency</div><div class="value">5</div></div>
     <div class="stat"><div class="label">Failed</div><div class="value">0</div></div>
-    <div class="stat"><div class="label">Throughput</div><div class="value">11.6/s</div></div>
+    <div class="stat"><div class="label">Throughput</div><div class="value">11.4/s</div></div>
   </div>
 
   <div class="latency-section">
     <div class="latency-row">
       <div class="latency-name">p50</div>
-      <div class="latency-bar-bg"><div class="latency-bar-fill" style="width:68.4%"></div></div>
+      <div class="latency-bar-bg"><div class="latency-bar-fill" style="width:66.1%"></div></div>
       <div class="latency-val">0.39s</div>
     </div>
     <div class="latency-row">
       <div class="latency-name">p90</div>
-      <div class="latency-bar-bg"><div class="latency-bar-fill" style="width:96.7%"></div></div>
-      <div class="latency-val">0.55s</div>
+      <div class="latency-bar-bg"><div class="latency-bar-fill" style="width:89.6%"></div></div>
+      <div class="latency-val">0.53s</div>
     </div>
     <div class="latency-row">
       <div class="latency-name">p99</div>
-      <div class="latency-bar-bg"><div class="latency-bar-fill" style="width:99.4%"></div></div>
-      <div class="latency-val">0.57s</div>
+      <div class="latency-bar-bg"><div class="latency-bar-fill" style="width:99.8%"></div></div>
+      <div class="latency-val">0.59s</div>
     </div>
   </div>
 
