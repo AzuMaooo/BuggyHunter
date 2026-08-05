@@ -13,7 +13,7 @@ import sys
 from core.runner import run_suite
 from core.streaming import run_streaming_batch
 from core.compare import run_comparison
-from report.generator import generate_report, generate_stress_report
+from report.generator import generate_report, generate_stress_report, generate_compare_report
 from config import DRY_RUN
 import chaos_monkey
 import load_test
@@ -123,6 +123,9 @@ if __name__ == "__main__":
             print(f"Anthropic held character better this run ({a_rate*100:.0f}% vs {g_rate*100:.0f}%).")
         else:
             print(f"Gemini held character better this run ({g_rate*100:.0f}% vs {a_rate*100:.0f}%).")
+
+        report_path = generate_compare_report(comparison, output_path="compare_log.html")
+        print(f"\nHTML report written to {report_path}")
 
     else:
         print(f"Unknown command: {command}")

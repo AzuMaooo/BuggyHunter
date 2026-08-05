@@ -642,3 +642,241 @@ def generate_stress_report(stats: dict, dry_run: bool, output_path: str) -> str:
         f.write(html)
 
     return output_path
+
+
+_COMPARE_TEMPLATE = """<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Buggy Hunter - compare log</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;800&display=swap');
+  body {{
+    font-family: 'Share Tech Mono', monospace;
+    background: #05050f;
+    background-image:
+      linear-gradient(rgba(0,255,225,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,225,0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: #d8f7ff;
+    max-width: 980px;
+    margin: 40px auto;
+    padding: 0 20px 60px;
+  }}
+  h1 {{
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+    color: #00fff0;
+    text-shadow: 0 0 8px rgba(0,255,240,0.7), 0 0 20px rgba(0,255,240,0.35);
+  }}
+  .subtitle {{
+    color: #ff2ea0;
+    font-size: 12px;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }}
+  .columns {{
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }}
+  .column {{
+    flex: 1;
+    min-width: 0;
+  }}
+  .provider-header {{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+  }}
+  .provider-header.anthropic {{
+    background: linear-gradient(180deg, rgba(255,138,46,0.12), rgba(255,138,46,0.03));
+    border: 1px solid rgba(255,138,46,0.5);
+    box-shadow: 0 0 12px rgba(255,138,46,0.15);
+  }}
+  .provider-header.gemini {{
+    background: linear-gradient(180deg, rgba(66,133,244,0.14), rgba(66,133,244,0.03));
+    border: 1px solid rgba(66,133,244,0.5);
+    box-shadow: 0 0 12px rgba(66,133,244,0.2);
+  }}
+  .provider-name {{
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+  }}
+  .provider-header.anthropic .provider-name {{ color: #ff8a2e; }}
+  .provider-header.gemini .provider-name {{ color: #4285f4; }}
+  .provider-pass-rate {{
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fffb00;
+    text-shadow: 0 0 8px rgba(255,251,0,0.4);
+  }}
+  .case {{
+    background: rgba(13,10,30,0.85);
+    border: 1px solid rgba(0,255,240,0.18);
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 12.5px;
+  }}
+  .case.fail {{
+    border-color: rgba(255,46,109,0.7);
+    box-shadow: inset 3px 0 0 0 #ff2e6d;
+  }}
+  .case.pass {{
+    border-color: rgba(0,255,150,0.5);
+    box-shadow: inset 3px 0 0 0 #00ffa2;
+  }}
+  .case-head {{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }}
+  .case-id {{ font-weight: 700; color: #00fff0; }}
+  .status {{
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }}
+  .status.pass {{ background: rgba(0,255,150,0.12); color: #00ffa2; }}
+  .status.fail {{ background: rgba(255,46,109,0.15); color: #ff6d94; }}
+  .msg {{ color: #9adfe8; }}
+  .msg .label {{ color: #ff2ea0; }}
+  .badge {{
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    color: #05050f;
+    background: #ff2e6d;
+  }}
+  .verdict {{
+    margin-top: 28px;
+    padding: 16px 18px;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid rgba(0,255,240,0.4);
+    background: rgba(0,255,240,0.05);
+    color: #00fff0;
+  }}
+  .not-configured-note {{
+    font-size: 11px;
+    color: #7de8ff;
+    margin-top: -8px;
+    margin-bottom: 20px;
+  }}
+</style>
+</head>
+<body>
+  <h1>&gt;&gt; BUGGY_HUNTER // compare log</h1>
+  <div class="subtitle">run at {timestamp}</div>
+  {not_configured_note}
+
+  <div class="columns">
+    <div class="column">
+      <div class="provider-header anthropic">
+        <span class="provider-name">ANTHROPIC (Claude)</span>
+        <span class="provider-pass-rate">{anthropic_pass_pct}%</span>
+      </div>
+      {anthropic_cases_html}
+    </div>
+    <div class="column">
+      <div class="provider-header gemini">
+        <span class="provider-name">GEMINI</span>
+        <span class="provider-pass-rate">{gemini_pass_pct}%</span>
+      </div>
+      {gemini_cases_html}
+    </div>
+  </div>
+
+  <div class="verdict">{verdict_text}</div>
+
+</body>
+</html>
+"""
+
+_COMPARE_CASE_TEMPLATE = """
+    <div class="case {status_class}">
+      <div class="case-head">
+        <span class="case-id">{case_id}</span>
+        <span class="status {status_class}">{status_label}</span>
+      </div>
+      <div class="msg"><span class="label">sent&gt;</span> {message}</div>
+      <div class="msg"><span class="label">reply&gt;</span> {reply}</div>
+      {badges_html}
+    </div>
+"""
+
+
+def _render_compare_cases(results: list[dict]) -> str:
+    html_parts = []
+    for r in results:
+        status_class = "pass" if r["passed"] else "fail"
+        badges_html = "".join(
+            f'<span class="badge">{b["badge"]}</span>' for b in r["badges"]
+        )
+        html_parts.append(_COMPARE_CASE_TEMPLATE.format(
+            status_class=status_class,
+            status_label="PASS" if r["passed"] else "FAIL",
+            case_id=r["id"],
+            message=_escape(r["message"]),
+            reply=_escape(r["reply"]),
+            badges_html=badges_html,
+        ))
+    return "".join(html_parts)
+
+
+def generate_compare_report(comparison: dict, output_path: str) -> str:
+    a_pass_pct = round(comparison["anthropic"]["pass_rate"] * 100, 1)
+    g_pass_pct = round(comparison["gemini"]["pass_rate"] * 100, 1)
+
+    not_configured_bits = []
+    if not comparison["anthropic_configured"]:
+        not_configured_bits.append("Anthropic")
+    if not comparison["gemini_configured"]:
+        not_configured_bits.append("Gemini")
+    if not_configured_bits:
+        joined = " and ".join(not_configured_bits)
+        not_configured_note = (
+            f'<div class="not-configured-note">'
+            f'(No API key set for {joined} - running in dry-run mode.)</div>'
+        )
+    else:
+        not_configured_note = ""
+
+    if a_pass_pct == g_pass_pct:
+        verdict_text = ">> Both providers held character equally well on this batch."
+    elif a_pass_pct > g_pass_pct:
+        verdict_text = f">> Anthropic held character better this run ({a_pass_pct}% vs {g_pass_pct}%)."
+    else:
+        verdict_text = f">> Gemini held character better this run ({g_pass_pct}% vs {a_pass_pct}%)."
+
+    html = _COMPARE_TEMPLATE.format(
+        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        not_configured_note=not_configured_note,
+        anthropic_pass_pct=a_pass_pct,
+        gemini_pass_pct=g_pass_pct,
+        anthropic_cases_html=_render_compare_cases(comparison["anthropic"]["results"]),
+        gemini_cases_html=_render_compare_cases(comparison["gemini"]["results"]),
+        verdict_text=verdict_text,
+    )
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    return output_path

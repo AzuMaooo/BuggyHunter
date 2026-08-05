@@ -64,7 +64,7 @@ python cli.py chaos 10          # generate + run 10 new adversarial prompts
 python cli.py stress 30 5       # 30 requests, 5 at a time
 ```
 
-Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_log.html`) into the project folder. Open it in any browser, no server required.
+Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_log.html`, `stream_log.html`, `compare_log.html`) into the project folder. Open it in any browser, no server required.
 
 ## Sample reports
 
