@@ -115,7 +115,7 @@ def save_batch(cases: list[dict], output_dir: str = "test_cases/generated") -> s
             "kind": "adversarial",
         })
 
-    with open(filename, "w") as f:
-        yaml.dump(test_cases, f, sort_keys=False)
+    with open(filename, "w", encoding="utf-8") as f:
+        yaml.dump(test_cases, f, sort_keys=False, allow_unicode=True)
 
     return filename

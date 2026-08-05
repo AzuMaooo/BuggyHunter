@@ -346,7 +346,7 @@ def generate_report(results: list[dict], dry_run: bool, output_path: str, report
         cases_html="".join(cases_html),
     )
 
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
 
     return output_path
@@ -638,7 +638,7 @@ def generate_stress_report(stats: dict, dry_run: bool, output_path: str) -> str:
         verdict_text=verdict_text,
     )
 
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
 
     return output_path
