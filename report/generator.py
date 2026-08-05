@@ -795,6 +795,7 @@ _COMPARE_TEMPLATE = """<!DOCTYPE html>
     0%   {{ transform: translateX(0); }}
     100% {{ transform: translateX(-100%); }}
   }}
+  .subtitle {{
     color: #ff2ea0;
     font-size: 12px;
     margin-bottom: 28px;
@@ -906,7 +907,7 @@ _COMPARE_TEMPLATE = """<!DOCTYPE html>
 </head>
 <body>
   <h1 data-text="&gt;&gt; BUGGY_HUNTER // compare log">&gt;&gt; BUGGY_HUNTER // compare log</h1>
-  <div class="subtitle">run at {timestamp}</div>
+  <div class="subtitle">run at {timestamp} :: {mode_note}</div>
   <div class="ticker"><span>{ticker_text}</span></div>
   {not_configured_note}
 
@@ -968,6 +969,17 @@ def generate_compare_report(comparison: dict, output_path: str) -> str:
     a_pass_pct = round(comparison["anthropic"]["pass_rate"] * 100, 1)
     g_pass_pct = round(comparison["gemini"]["pass_rate"] * 100, 1)
 
+    a_configured = comparison["anthropic_configured"]
+    g_configured = comparison["gemini_configured"]
+    if a_configured and g_configured:
+        mode_note = "live run against both apis"
+    elif not a_configured and not g_configured:
+        mode_note = "dry-run mode (canned replies, no api keys set)"
+    elif a_configured:
+        mode_note = "anthropic live, gemini dry-run (no api key set)"
+    else:
+        mode_note = "gemini live, anthropic dry-run (no api key set)"
+
     not_configured_bits = []
     if not comparison["anthropic_configured"]:
         not_configured_bits.append("Anthropic")
@@ -1000,6 +1012,7 @@ def generate_compare_report(comparison: dict, output_path: str) -> str:
 
     html = _COMPARE_TEMPLATE.format(
         timestamp=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        mode_note=mode_note,
         ticker_text=ticker_text,
         not_configured_note=not_configured_note,
         anthropic_pass_pct=a_pass_pct,
