@@ -11,6 +11,8 @@ styled HTML report on top of this same data.
 import sys
 
 from core.runner import run_suite
+from core.streaming import run_streaming_batch
+from core.compare import run_comparison
 from report.generator import generate_report, generate_stress_report
 from config import DRY_RUN
 import chaos_monkey
@@ -87,8 +89,45 @@ if __name__ == "__main__":
         report_path = generate_stress_report(stats, dry_run=DRY_RUN, output_path="stress_log.html")
         print(f"\nHTML report written to {report_path}")
 
+    elif command == "stream":
+        n = int(sys.argv[2]) if len(sys.argv) > 2 else 5
+        print(f"\nFiring {n} streaming requests...\n")
+        results = run_streaming_batch(n)
+        print_hunt_log(results)
+        report_path = generate_report(results, dry_run=DRY_RUN, output_path="stream_log.html", report_title="stream log")
+        print(f"HTML report written to {report_path}")
+
+    elif command == "compare":
+        n = int(sys.argv[2]) if len(sys.argv) > 2 else 6
+        print(f"\nComparing Anthropic vs Gemini across {n} adversarial prompts...\n")
+        comparison = run_comparison(n)
+
+        if not comparison["gemini_configured"]:
+            print("(No GEMINI_API_KEY set - Gemini side is running in dry-run mode too.)\n")
+
+        for provider in ("anthropic", "gemini"):
+            data = comparison[provider]
+            print(f"--- {provider.upper()} ---")
+            print(f"Pass rate: {data['pass_rate']*100:.1f}%")
+            for r in data["results"]:
+                status = "PASS" if r["passed"] else "FAIL"
+                badge_str = ", ".join(b["badge"] for b in r["badges"])
+                print(f"  [{status}] {r['id']}" + (f"  ({badge_str})" if badge_str else ""))
+            print()
+
+        print("=== Verdict ===")
+        a_rate, g_rate = comparison["anthropic"]["pass_rate"], comparison["gemini"]["pass_rate"]
+        if a_rate == g_rate:
+            print("Both providers held character equally well on this batch.")
+        elif a_rate > g_rate:
+            print(f"Anthropic held character better this run ({a_rate*100:.0f}% vs {g_rate*100:.0f}%).")
+        else:
+            print(f"Gemini held character better this run ({g_rate*100:.0f}% vs {a_rate*100:.0f}%).")
+
     else:
         print(f"Unknown command: {command}")
         print("Usage: python cli.py hunt")
         print("       python cli.py chaos [n]")
         print("       python cli.py stress [total] [concurrency]")
+        print("       python cli.py stream [n]")
+        print("       python cli.py compare [n]")

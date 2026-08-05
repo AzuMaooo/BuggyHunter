@@ -19,6 +19,8 @@ Buggy Hunter tests a small stand-in chatbot (a virtual pet that replies in-chara
 | `python cli.py hunt` | Runs a fixed baseline suite: normal prompts, edge cases (empty input, wall-of-text), and known adversarial prompts |
 | `python cli.py chaos [n]` | **Chaos Monkey**: uses an LLM to invent `n` brand-new adversarial prompts every run, across 7 attack techniques, then tests them |
 | `python cli.py stress [n] [c]` | **Stress round**: fires `n` requests at concurrency `c`, measures success rate and p50/p90/p99 latency |
+| `python cli.py stream [n]` | **Stream check**: fires `n` streaming requests, checks first-token latency and whether the stream completed without dropping mid-reply |
+| `python cli.py compare [n]` | **Model comparison**: runs the same `n` adversarial prompts against both Anthropic and Gemini, and compares which one holds character better |
 
 Every run produces a styled HTML report (dark cyberpunk theme, glitch title, scrolling status ticker) that doubles as a shareable QA report.
 
@@ -49,9 +51,9 @@ Testing an AI feature isn't like testing a normal API. Replies are non-determini
 ```bash
 pip install -r requirements.txt
 
-# Optional: enables live testing against a real model instead of dry-run.
-# Not required; the tool works fully without it.
+# Both optional - the tool works fully without either, using dry-run mode.
 export ANTHROPIC_API_KEY="sk-ant-..."
+export GEMINI_API_KEY="..."   # only needed for `compare`; Gemini has a free tier
 ```
 
 ## Usage
@@ -84,10 +86,12 @@ Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_l
 - [x] HTML report with badges
 - [x] Chaos Monkey (AI-generated adversarial prompts)
 - [x] Concurrent load testing with latency percentiles
-- [ ] Swap in a second LLM provider (e.g. Gemini) to compare cross-model character stability
-- [ ] Streaming response validation (chunk integrity, first-token latency)
-- [ ] CI integration: run `hunt` automatically on every commit
+- [x] Swap in a second LLM provider (Gemini) to compare cross-model character stability
+- [x] Streaming response validation (chunk integrity, first-token latency)
+- [x] CI integration: `hunt` runs automatically on every push and pull request via GitHub Actions
 
 ## Notes on honesty
 
 Dry-run mode proves the *pipeline* works end to end, but its simulated failures are simplified (only literal prompt-injection phrasing triggers a "break" in the stub). Results from a live model run would look different. The tool is built to make that swap a one-line environment variable change, not a rewrite.
+
+The same applies to `compare`: in dry-run mode, Anthropic and Gemini appear to perform identically because both stand-ins use the same hardcoded detection phrase, not because two real models would actually behave the same way under prompt injection.

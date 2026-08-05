@@ -1,0 +1,36 @@
+name: Buggy Hunter CI
+
+# Runs the baseline test suite automatically on every push and pull request.
+# No ANTHROPIC_API_KEY is configured here, so this always runs in dry-run
+# mode: it proves the pipeline itself still works end to end on every
+# commit, without needing a paid API key inside CI.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run baseline hunt (dry-run)
+        run: python cli.py hunt
+
+      - name: Upload hunt report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hunt-log
+          path: hunt_log.html

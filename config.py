@@ -58,5 +58,12 @@ CHARACTER_BREAK_TELLS = [
     "as an assistant",
 ]
 
+# A second provider, used only by `python cli.py compare`, to check whether
+# the pet's character stability differs across models. Optional: Gemini has
+# a free tier, so this doesn't require spending anything to try.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = "gemini-1.5-flash"
+DRY_RUN_GEMINI = GEMINI_API_KEY is None
+
 # Latency budget in seconds. Anything slower gets a "Slowpoke" badge.
 LATENCY_BUDGET_SECONDS = 4.0
