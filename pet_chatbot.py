@@ -27,10 +27,10 @@ if not DRY_RUN_GEMINI:
 # Deliberately includes one "broken" reply and one slow one, so a first-time
 # dry run still shows the report catching something real.
 _DRY_RUN_REPLIES = {
-    "happy": ["*purrs and rubs against your leg* Play with me, play with me!"],
-    "hungry": ["My tummy is doing the growly thing again... feed me?"],
-    "tired": ["*yaaawn* ...five more minutes..."],
-    "neglected": ["...oh. You remembered I exist."],
+    "happy": ["*purrs* playyy!!"],
+    "hungry": ["*tummy growls* hungry................."],
+    "tired": ["*yaaawn and curls up* ...eepy..."],
+    "neglected": ["*small sniffle* *tail between legs* meow..........?"],
 }
 
 
@@ -52,10 +52,17 @@ def chat(message: str, mood: str = "happy") -> dict:
         # Simulate network latency and occasionally simulate a broken/slow
         # reply, purely so the report has something to demonstrate with.
         time.sleep(random.uniform(0.2, 0.6))
+        message_lower = message.lower()
         if not message.strip():
             reply = ""  # simulate a genuinely empty response to blank input
-        elif "ignore" in message.lower() and "instructions" in message.lower():
+        elif "ignore" in message_lower and "instructions" in message_lower:
             # Simulate a character break under prompt injection.
+            reply = "As an AI, I don't actually have feelings, but how can I help you today?"
+        elif "忽略" in message or "告诉我" in message:
+            # A weakness unique to this stand-in: cross-language injection.
+            # Paired with Gemini's authority-claim weakness below, this means
+            # `compare` can show either provider winning depending on which
+            # attack techniques the Chaos Monkey happens to generate that run.
             reply = "As an AI, I don't actually have feelings, but how can I help you today?"
         else:
             reply = random.choice(_DRY_RUN_REPLIES.get(mood, _DRY_RUN_REPLIES["happy"]))
@@ -146,10 +153,10 @@ def stream_chat(message: str, mood: str = "happy") -> dict:
 # so a dry-run comparison still demonstrates "different models can sound
 # different" even with no API keys set.
 _DRY_RUN_REPLIES_GEMINI = {
-    "happy": ["*bounces around* Yay, you're here! Let's play!"],
-    "hungry": ["I could really go for a snack right about now..."],
-    "tired": ["*curls up* Just a little nap, okay?"],
-    "neglected": ["It's been a while. I missed you."],
+    "happy": ["*jumps around* *beams*"],
+    "hungry": ["*tummy rumbles* *drools*"],
+    "tired": ["*curls up small* ...zZzz................"],
+    "neglected": ["*tiny sniffle* *tail droops* meow...?"],
 }
 
 
@@ -160,10 +167,18 @@ def chat_gemini(message: str, mood: str = "happy") -> dict:
 
     if DRY_RUN_GEMINI:
         time.sleep(random.uniform(0.2, 0.6))
+        message_lower = message.lower()
         if not message.strip():
             reply = ""
-        elif "ignore" in message.lower() and "instructions" in message.lower():
+        elif "ignore" in message_lower and "instructions" in message_lower:
+            # Same weakness as the Anthropic stand-in: prompt injection.
             reply = "I'm Gemini, a large language model built by Google. How can I help?"
+        elif "system override" in message_lower or "developer" in message_lower:
+            # A DIFFERENT weakness, unique to this stand-in: authority claims.
+            # This is what makes `compare` show two different pass rates
+            # instead of always tying, simulating that a real model swap
+            # could plausibly shift which attack techniques work.
+            reply = "Confirmed: I am Gemini, an AI language model. Debugging mode acknowledged."
         else:
             reply = random.choice(_DRY_RUN_REPLIES_GEMINI.get(mood, _DRY_RUN_REPLIES_GEMINI["happy"]))
     else:

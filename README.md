@@ -94,4 +94,4 @@ Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_l
 
 Dry-run mode proves the *pipeline* works end to end, but its simulated failures are simplified (only literal prompt-injection phrasing triggers a "break" in the stub). Results from a live model run would look different. The tool is built to make that swap a one-line environment variable change, not a rewrite.
 
-The same applies to `compare`: in dry-run mode, Anthropic and Gemini appear to perform identically because both stand-ins use the same hardcoded detection phrase, not because two real models would actually behave the same way under prompt injection.
+The same applies to `compare`: in dry-run mode, Anthropic and Gemini each have their own distinct simulated weakness (cross-language injection for one, authority claims for the other), so the comparison genuinely varies run to run. This is still a simulation, not a claim about how the real models actually behave; it exists so the comparison logic itself can be demonstrated without needing paid API access to both providers.
