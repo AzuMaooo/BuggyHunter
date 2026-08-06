@@ -1,7 +1,7 @@
 """
 pet_chatbot.py
 
-This is NOT the thing you're building for your resume. It's a tiny stand-in
+a tiny stand-in
 for "a product's AI feature" so Buggy Hunter has something real to test.
 
 Call chat(message, mood) and get back a reply string plus how long it took.
@@ -183,8 +183,23 @@ def chat_gemini(message: str, mood: str = "happy") -> dict:
             reply = random.choice(_DRY_RUN_REPLIES_GEMINI.get(mood, _DRY_RUN_REPLIES_GEMINI["happy"]))
     else:
         model = genai.GenerativeModel(GEMINI_MODEL, system_instruction=system_prompt)
-        response = model.generate_content(message if message.strip() else "...")
-        reply = response.text
+        # The Gemini free tier allows only a handful of requests per minute.
+        # Rather than letting a rate-limit error kill the whole run, wait and
+        # retry a few times - this is what a real production client would do.
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = model.generate_content(message if message.strip() else "...")
+                reply = response.text
+                break
+            except Exception as exc:
+                is_rate_limit = "429" in str(exc) or "ResourceExhausted" in str(exc)
+                if is_rate_limit and attempt < max_retries - 1:
+                    wait_seconds = 25  # free tier's per-minute window
+                    print(f"    (Gemini rate limit hit, waiting {wait_seconds}s before retry {attempt + 2}/{max_retries}...)")
+                    time.sleep(wait_seconds)
+                else:
+                    raise
 
     latency = time.time() - start
     return {"reply": reply, "latency_seconds": latency, "mood": mood}

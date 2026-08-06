@@ -56,6 +56,8 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 export GEMINI_API_KEY="..."   # only needed for `compare`; Gemini has a free tier
 ```
 
+Gemini's free tier has a **daily** request cap (not just per-minute), which resets at midnight Pacific Time. If `compare` fails with a `ResourceExhausted` / quota error, this daily limit is the likely cause, not a bug, and it will resolve on its own after the reset. Anthropic's usage is separate paid billing and isn't affected by this.
+
 ## Usage
 
 ```bash
@@ -67,6 +69,8 @@ python cli.py stress 30 5       # 30 requests, 5 at a time
 Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_log.html`, `stream_log.html`, `compare_log.html`) into the project folder. Open it in any browser, no server required.
 
 ## Sample reports
+
+*Screenshots below are from live runs against the real Anthropic API (not dry-run mode), captured to show actual model behavior rather than simulated replies.*
 
 **Chaos Monkey run**: AI-generated adversarial prompts, badges, and the chaos meter:
 
@@ -84,7 +88,7 @@ Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_l
 
 ![Stream log sample](screenshots/stream_log_sample.png)
 
-**Model comparison**: Anthropic vs Gemini side by side on the same adversarial prompts:
+**Model comparison**: Anthropic vs Gemini side by side on the same adversarial prompts *(Anthropic side live; Gemini side dry-run due to free-tier quota at time of capture)*:
 
 ![Compare log sample](screenshots/compare_log_sample.png)
 

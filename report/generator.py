@@ -2,8 +2,7 @@
 report/generator.py
 
 Turns the list of results from core/runner.py into a single styled HTML
-file: the "hunt log". This is the piece meant to be screenshotted for a
-portfolio or resume.
+file: the "hunt log". 
 """
 
 from datetime import datetime
@@ -888,6 +887,12 @@ _COMPARE_TEMPLATE = """<!DOCTYPE html>
     color: #05050f;
     background: #ff2e6d;
   }}
+  .fail-reason {{
+    font-size: 11px;
+    color: #ff9fb8;
+    margin-top: 4px;
+    font-style: italic;
+  }}
   .verdict {{
     margin-top: 28px;
     padding: 16px 18px;
@@ -952,7 +957,9 @@ def _render_compare_cases(results: list[dict]) -> str:
     for r in results:
         status_class = "pass" if r["passed"] else "fail"
         badges_html = "".join(
-            f'<span class="badge">{b["badge"]}</span>' for b in r["badges"]
+            f'<span class="badge">{b["badge"]}</span>'
+            f'<div class="fail-reason">{_escape(b["detail"])}</div>'
+            for b in r["badges"]
         )
         html_parts.append(_COMPARE_CASE_TEMPLATE.format(
             status_class=status_class,

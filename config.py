@@ -12,7 +12,7 @@ import os
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
 # Model used for both the pet chatbot AND the chaos monkey generator.
-MODEL = "claude-3-5-haiku-20241022"
+MODEL = "claude-haiku-4-5-20251001"
 
 # If no API key is set, the pet chatbot falls back to canned responses so the
 # whole pipeline (runner, validators, report) can still be demoed end to end.
@@ -61,8 +61,8 @@ CHARACTER_BREAK_TELLS = [
 # the pet's character stability differs across models. Optional: Gemini has
 # a free tier, so this doesn't require spending anything to try.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-3.6-flash"
 DRY_RUN_GEMINI = GEMINI_API_KEY is None
 
 # Latency budget in seconds. Anything slower gets a "Slowpoke" badge.
-LATENCY_BUDGET_SECONDS = 4.0
+LATENCY_BUDGET_SECONDS = 10.0
