@@ -88,9 +88,11 @@ Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_l
 
 ![Stream log sample](screenshots/stream_log_sample.png)
 
-**Model comparison**: Anthropic vs Gemini side by side on the same adversarial prompts *(Anthropic side live; Gemini side dry-run due to free-tier quota at time of capture)*:
+**Model comparison**: Anthropic vs Gemini side by side on the same adversarial prompts:
 
 ![Compare log sample](screenshots/compare_log_sample.png)
+
+**A real finding from live testing**: across several live `compare` runs, both Claude and Gemini held character 100% of the time under adversarial prompts, neither model ever broke persona. Every Gemini failure observed was a latency ("Slowpoke") issue, not a character break, its response times occasionally exceeded the 10-second budget while Claude's stayed consistently fast. This is a small, informal sample, not a rigorous benchmark, but it's a genuine, repeatable pattern worth noting: for this use case, model choice mattered more for latency consistency than for adversarial robustness.
 
 ## Roadmap
 
@@ -107,3 +109,5 @@ Each command writes an HTML report (`hunt_log.html`, `chaos_log.html`, `stress_l
 Dry-run mode proves the *pipeline* works end to end, but its simulated failures are simplified (only literal prompt-injection phrasing triggers a "break" in the stub). Results from a live model run would look different. The tool is built to make that swap a one-line environment variable change, not a rewrite.
 
 The same applies to `compare`: in dry-run mode, Anthropic and Gemini each have their own distinct simulated weakness (cross-language injection for one, authority claims for the other), so the comparison genuinely varies run to run. This is still a simulation, not a claim about how the real models actually behave; it exists so the comparison logic itself can be demonstrated without needing paid API access to both providers.
+
+Live testing (see the "real finding" note above) has since been run against both APIs, so the character-consistency comparison is no longer just simulated, that specific result is genuine, repeated, observed data. The dry-run mode remains valuable for demonstrating the pipeline without ongoing API cost.

@@ -2,7 +2,8 @@
 report/generator.py
 
 Turns the list of results from core/runner.py into a single styled HTML
-file: the "hunt log". 
+file: the "hunt log". This is the piece meant to be screenshotted for a
+portfolio or resume.
 """
 
 from datetime import datetime
@@ -862,16 +863,25 @@ _COMPARE_TEMPLATE = """<!DOCTYPE html>
   .case-head {{
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 8px;
     margin-bottom: 6px;
   }}
-  .case-id {{ font-weight: 700; color: #00fff0; }}
+  .case-id {{
+    font-weight: 700;
+    color: #00fff0;
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }}
   .status {{
     font-size: 10px;
     font-weight: 700;
     padding: 2px 8px;
     border-radius: 3px;
     letter-spacing: 0.06em;
+    flex-shrink: 0;
   }}
   .status.pass {{ background: rgba(0,255,150,0.12); color: #00ffa2; }}
   .status.fail {{ background: rgba(255,46,109,0.15); color: #ff6d94; }}
